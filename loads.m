@@ -1,21 +1,20 @@
 function [loading] = loads(x, W_wing, W_fuel)
+global couplings;
 
 % Critical Conditions
-Mmo = 0.88;      % Critical Mach number [-]
-velo = 266;      % Velocity at M=0.88 and h=31000ft [m/s]
-dens = 0.441653; % Density at h=31000ft [kg/m3]
-alti = 9448.8;   % h=31000ft [m]
+Mmo = couplings.Mmo;
+velo = couplings.Vmo;
+dens = couplings.rhocr;
+alti = couplings.hcr;
 
-% Calculate Reynolds Number
-taper = x(4)/x(2);
-MAC = (2/3)*x(2)*((1+taper+taper^2)/(1+taper));
+MAC = couplings.MAC;
 N_Re = (dens*velo*MAC)/(9.49e-6);
 
 % Calculate Required CL
-n_max = 2.5;      % Ultimate Load Factor [-]
-W_ac = 123456;    % Weight of Aircraft minus Fuel and Wing [kg]
+n_max = couplings.nmax; 
+W_ac = couplings.Wac;
 W_MTOW = W_ac+W_fuel+W_wing;
-S = 2*(((x(2)+x(3))/2)*7.56 + ((x(3)+x(4))/2)*x(1));
+S = couplings.S;
 CL = (n_max*W_MTOW*9.80665)/(S*0.5*dens*velo^2);
 
 % Wing Geometry

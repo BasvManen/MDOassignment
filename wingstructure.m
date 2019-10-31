@@ -1,4 +1,5 @@
 function [W_str] = wingstructure(x, W_wing, W_fuel, loading)
+global couplings;
 
 % Make Files for Cartesian Coordinates of Airfoils
 lstrootup = [x(8)  x(9)  x(10) x(11) x(12) x(13)];
@@ -32,18 +33,17 @@ fclose(fid);
 geom = calcwing(x);
 
 % Initial Values
-velo = 266;      % Velocity at M=0.88 and h=31000ft [m/s]
-dens = 0.441653; % Density at h=31000ft [kg/m3]
+velo = couplings.Vmo; 
+dens = couplings.rhocr;
 q = 0.5*dens*velo^2;
 
-n_max = 2.5;    % Critical Load Factor [-]
-W_ac = 123456;  % Weight of Aircraft minus Fuel and Wing [kg]
+n_max = couplings.nmax;   
+W_ac = couplings.Wac;  
 W_MTOW = W_ac+W_wing+W_fuel;
 W_MZFW = W_MTOW-W_fuel;
-S = 2*(((x(2)+x(3))/2)*7.56 + ((x(3)+x(4))/2)*x(1));
-b = 2*(7.56+x(1));
-taper = x(4)/x(2);
-MAC = (2/3)*x(2)*((1+taper+taper^2)/(1+taper));
+S = couplings.S;
+b = couplings.b;
+MAC = couplings.MAC;
 
 fid = fopen('DC10.init','wt');
 fprintf(fid,'%g %g\n',W_MTOW,W_MZFW);
