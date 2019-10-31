@@ -33,16 +33,12 @@ winit = 1000;
 finit = 10000;
 wnew = 0;
 fnew = 0;
-error = sqrt((winit-wnew)^2+(finit-fnew)^2);
-
-while error > 10000
-    ans1 = loads(x, winit, finit);
-    wnew = wingstructure(x, winit, finit, ans1);
-    ans2 = aero(x, wnew, finit);
-    fnew = performance(wnew, finit, ans2);
-    error = sqrt((winit-wnew)^2+(finit-fnew)^2);
-    winit = wnew;
-    finit = fnew;
-    disp(wnew)
-    disp(fnew)
-end
+error = (winit-wnew)^2+(finit-fnew)^2);
+ans1 = loads(x, 1000, 10000);
+disp('done')
+ans2 = wingstructure(x, 1000, 10000, ans1);
+disp('done')
+ans3 = aero(x, ans2, 10000);
+disp('done')
+ans4 = performance(ans2,10000,ans3);
+disp('done')
