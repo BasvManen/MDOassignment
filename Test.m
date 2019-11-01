@@ -2,47 +2,50 @@ clear all
 close all
 clc
 
-x = [17.64 11.96 7.77 2.6312 35 0 0 0.2172 0.3451 0.2972 0.2688 0.2892 0 -0.1295 -0.2392 -0.1629 -0.0482 0.0802 0 0.2172 0.3451 0.2972 0.2688 0.2892 0 -0.1295 -0.2392 -0.1629 -0.0482 0.0802 0];
+x = [15.7872 11.9922 6.3756 2.8842 38 0 0 0.233698608660493 0.0797514269091338 0.267877614548858 0.0892791441174730 0.278358178094077 0.381411808678940 -0.225259927775114 -0.164056310299420 -0.0455965354614051 -0.478898192543423 0.0748917675336164 0.324843802364473 0.233698608660493 0.0797514269091338 0.267877614548858 0.0892791441174730 0.278358178094077 0.381411808678940 -0.225259927775114 -0.164056310299420 -0.0455965354614051 -0.478898192543423 0.0748917675336164 0.324843802364473];
 
-global couplings;
-
-% Constants with respect to flight conditions
-couplings.Mmo = 0.88;       % Maximum Operatable Mach Number [-]
-couplings.Mcr = 0.83;       % Cruise Mach Number [-]
-couplings.Vmo = 266;        % Speed at Mmo and h=hcr [m/s]
-couplings.Vcr = 251;        % Speed at Mcr and h=hcr [m/s]
-couplings.hcr = 9448.8;     % Cruise Height (31000ft) [m]
-couplings.rhocr = 0.441653; % Density at h=hcr [kg/m3]
-couplings.range = 7408e3;   % Aircraft Range (4000nm) [m]
-couplings.nmax = 2.5;       % Ultimate Load Factor [-]
-
-% Constant with respect to aircraft characteristics
-couplings.Wac = 123456;     % Weight of the Aircraft minus Fuel and Wing [kg]
-couplings.Dac = 1234;       % Drag of the Aircraft minus Fuel and Wing [N]
+% Cruise Conditions
+Mcr = 0.83;
+velo = 251;
+dens = 0.441653;
+alti = 9448.8;
 
 taper = x(4)/x(2);
 S = 2*(((x(2)+x(3))/2)*7.56 + ((x(3)+x(4))/2)*x(1));
 MAC = (2/3)*x(2)*((1+taper+taper^2)/(1+taper));
 b = 2*(7.56+x(1));
-couplings.taper = taper;    % Taper Ratio of the Wing [-]
-couplings.b = b;            % Total Wing Span [m]
-couplings.S = S;            % Total Wing Surface Area [m2]
-couplings.MAC = MAC;        % Length of the Mean Aerodynamic Chord [m]
+N_Re = (dens*velo*MAC)/(9.49e-6);
 
-winit = 1000;
-finit = 10000;
-wnew = 0;
-fnew = 0;
-error = sqrt((winit-wnew)^2+(finit-fnew)^2);
+% Calculate Required CL
+W_MTOW = 263636;
+W_fuel = 93942;
+Ldes = sqrt(W_MTOW*(W_MTOW-W_fuel));
+CL = (Ldes*9.80665)/(S*0.5*dens*velo^2);
 
-while error > 10000
-    ans1 = loads(x, winit, finit);
-    wnew = wingstructure(x, winit, finit, ans1);
-    ans2 = aero(x, wnew, finit);
-    fnew = performance(wnew, finit, ans2);
-    error = sqrt((winit-wnew)^2+(finit-fnew)^2);
-    winit = wnew;
-    finit = fnew;
-    disp(wnew)
-    disp(fnew)
-end
+% Wing Geometry
+AC.Wing.Geom = calcwing(x);
+AC.Wing.inc = 0;
+
+% Wing Airfoil
+AC.Wing.Airfoils = [x(8)  x(9)  x(10) x(11) x(12) x(13) x(14) x(15) x(16) x(17) x(18) x(19);
+                    x(20) x(21) x(22) x(23) x(24) x(25) x(26) x(27) x(28) x(29) x(30) x(31)];
+AC.Wing.eta = [0;1];
+
+% Viscosity
+AC.Visc = 1;
+AC.Aero.MaxIterIndex = 150;
+
+% Flight Conditions
+AC.Aero.V = velo;        
+AC.Aero.rho = dens; 
+AC.Aero.alt = alti;   
+AC.Aero.Re = N_Re;
+AC.Aero.M = Mcr;
+AC.Aero.CL = CL;
+
+% Solver
+Res = Q3D_solver(AC);
+
+% Output Results
+CLwing = Res.CLwing;
+CDwing = Res.CDwing;
