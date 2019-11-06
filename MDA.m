@@ -9,7 +9,6 @@ error = 1;
 
 while error > 0.01
     counter = counter+1;
-    disp(counter)
     ans1 = loads(x,W_wing0,W_fuel0);
     W_wing1 = wingstructure(x,W_wing0,W_fuel0,ans1);
     ans2 = aero(x,W_wing1,W_fuel0);

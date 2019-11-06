@@ -36,8 +36,8 @@ x(30) =  0.0748917675336164;    %  "                      "
 x(31) =  0.324843802364473;     %  "                      "
 
 x0 = ones(31,1);
-lb = [15  12 7 2.7 30 -3 -3 0 0 0 0 0 0 0 0 0 0 -1 -1 0 0 0 0 0 0 0 0 0 0 -1 -1]./x';
-ub = [20 15 9 3.1 40  3  3 1 1 1 1 1 1 -1 -1 -1 -1 1 1 1 1 1 1 1 1 -1 -1 -1 -1 1 1]./x';
+lb = [12.50  9.58 6.22 2.10 26 -5 -5 0 0 0 0 0 0 -1 -1 -1 -1 -1 -1 0 0 0 0 0 0 0 0 0 0 -1 -1]./x;
+ub = [18.44 14.36 9.32 3.16 48  5  5 1 1 1 1 1 1 0 0 0 0 1 1 1 1 1 1 1 1 -1 -1 -1 -1 1 1]./x;
 global couplings;
 
 % Constants with respect to flight conditions
@@ -69,11 +69,15 @@ couplings.Wfuel0 = 10000;   % Initial Guess for Fuel Weight [kg]
 
 % Options for the optimization
 options.Display         = 'iter-detailed';
+options.Algorithm       = 'sqp';
 options.FunValCheck     = 'off';
 options.DiffMinChange   = 1e-6;         % Minimum change while gradient searching
 options.DiffMaxChange   = 5e-2;         % Maximum change while gradient searching
-options.TolFun          = 1e-5;         % Maximum difference between two subsequent objective value
-options.TolX            = 1e-5;         % Maximum difference between two subsequent design vectors
+options.TolCon          = 1e-6;         % Maximum difference between two subsequent constraint vectors [c and ceq]
+options.TolFun          = 1e-6;         % Maximum difference between two subsequent objective value
+options.TolX            = 1e-6;         % Maximum difference between two subsequent design vectors
+
+options.MaxIter         = 30;           % Maximum iterations
 
 tic;
 [x,FVAL,EXITFLAG,OUTPUT] = fmincon(@(x) optimization(x),x0,[],[],[],[],lb,ub,@(x) constraints(x),options);
