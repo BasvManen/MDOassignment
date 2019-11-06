@@ -1,8 +1,8 @@
 function [W_wing, W_fuel] = MDA(x)
 global couplings;
 
-W_fuel0 = couplings.Wfuel0;
 W_wing0 = couplings.Wwing0;
+W_fuel0 = couplings.Wfuel0;
 
 counter = 0;
 error = 1;
