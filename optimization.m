@@ -31,7 +31,6 @@ couplings.Wwing0 = 2300;    % Initial Guess for Wing Weight [kg]
 couplings.Wfuel0 = 93942;   % Initial Guess for Fuel Weight [kg]
 
 disp(x)
-
 [W_wing, W_fuel] = MDA(x);
 
 f0 = objective(W_wing, W_fuel);
@@ -40,7 +39,7 @@ vararg = [W_wing, W_fuel];
 couplings.Fuel = W_fuel;
 couplings.MTOW = W_wing+W_fuel+couplings.Wac;
 
-f = f0/2.4981E5;
+f = f0/2.6895E5;
 
 end
 

@@ -29,7 +29,7 @@ AC.Wing.eta = [0;1];
 
 % Viscosity
 AC.Visc = 1;
-AC.Aero.MaxIterIndex = 150;
+AC.Aero.MaxIterIndex = 1000;
 
 % Flight Conditions
 AC.Aero.V = velo;        
